@@ -1,19 +1,19 @@
 #!/bin/bash
-#SBATCH -J vae-oasis
-#SBATCH -p gpu
-#SBATCH -N 1
-#SBATCH --gres=gpu:1
-#SBATCH -t 06:00:00
+#SBATCH --job-name=vae-oasis
+#SBATCH --partition=comp3710
+#SBATCH --qos=comp3710             
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=4
 #SBATCH --mem=24G
-#SBATCH -o logs/%x-%j.out
-#SBATCH -e logs/%x-%j.err
+#SBATCH --time=06:00:00
+#SBATCH --output=logs/%x-%j.out
+#SBATCH --error=logs/%x-%j.err
 
+set -euo pipefail
 source ~/.bashrc
 conda activate vae
-module load cuda/12.2
-
-# if PyTorch isn't installed in your env on the node, uncomment next line once:
-# pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
+export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK
 
 python -u train_vae.py \
   --data_root /home/groups/comp3710/OASIS_preprocessed \
